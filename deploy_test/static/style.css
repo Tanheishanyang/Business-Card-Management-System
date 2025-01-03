@@ -22,8 +22,9 @@ body {
 
 .container .card {
   position: relative;
-  width: 320px;
-  height: 400px;
+  width: 70%; /* 宽度占网页的70% */
+  max-width: 800px; /* 设置最大宽度，防止过大 */
+  height: auto; /* 高度自适应内容 */
   background-color: rgba(45, 45, 45, 1);
   border-radius: 20px;
   overflow: hidden;
