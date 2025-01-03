@@ -1,3 +1,4 @@
+.css
 * {
   margin: 0;
   padding: 0;
@@ -13,17 +14,19 @@ body {
 }
 
 .container {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 50px;
-  flex-wrap: wrap ;
+  width: 100%;
+  min-height: 100vh;
 }
 
 .container .card {
   position: relative;
-  width: 320px;
-  height: 400px;
+  width: 70%;
+  height: 60vh;  /* 改为视口高度的60% */
+  min-height: 400px;  /* 保持最小高度限制 */
   background-color: rgba(45, 45, 45, 1);
   border-radius: 20px;
   overflow: hidden;
@@ -39,7 +42,7 @@ body {
   width: 700px;
   height: 700px;
   opacity: 0;
-  transition: .5s, top 0, left：0;
+  transition: .5s, top 0, left 0;
 }
 
 .container .card:hover::before {
