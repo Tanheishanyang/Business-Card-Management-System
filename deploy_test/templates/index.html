@@ -1,39 +1,109 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Glowing Corner Hover Effects</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    /* ==================== 全局样式 ==================== */
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden; /* 防止滚动 */
+      height: 100%; /* 确保完整高度 */
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #222;
+      position: fixed; /* 固定位置 */
+      width: 100%; /* 确保宽度 */
+    }
+
+    /* ==================== 容器 & 卡片样式 ==================== */
+    .container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100vh; /* 使用完整视口高度 */
+    }
+
+    .container .card {
+      position: relative;
+      width: 70%;
+      height: 60vh; /* 改为视口高度的60% */
+      min-height: 400px; /* 保持最小高度限制 */
+      background-color: rgba(45, 45, 45, 1);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+
+    .container .card::before {
+      content: '';
+      position: absolute;
+      top: var(--y);
+      left: var(--x);
+      transform: translate(-50%, -50%);
+      background: radial-gradient(var(--clr), transparent, transparent);
+      width: 700px;
+      height: 700px;
+      opacity: 0;
+      transition: .5s, top 0, left 0;
+    }
+
+    .container .card:hover::before {
+      opacity: 1;
+    }
+
+    .container .card::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 18px;
+      background-color: rgba(45, 45, 45, .75);
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-      <div class="card" style="--clr: #0f0;"></div>
+    <!-- 可以改变 style="--clr: #0f0;" 中的颜色，以查看不同效果 -->
+    <div class="card" style="--clr: #0f0;"></div>
   </div>
+
   <script>
-    const cards = document.querySelectorAll('.card')
+    // 1. 禁止整个页面在手机端滚动，并让 touchmove 事件在一开始就生效
+    document.addEventListener("touchmove", function(e) {
+      e.preventDefault();
+    }, { passive: false });
+
+    // 2. 卡片跟随鼠标 / 触摸点发光
+    const cards = document.querySelectorAll('.card');
     cards.forEach(card => {
       // 鼠标移动事件
       card.onmousemove = function(e) {
         const x = e.pageX - card.offsetLeft,
-              y = e.pageY - card.offsetTop
+              y = e.pageY - card.offsetTop;
 
-        card.style.setProperty('--x', x + 'px')      
-        card.style.setProperty('--y', y + 'px')      
-      }
+        card.style.setProperty('--x', x + 'px');
+        card.style.setProperty('--y', y + 'px');
+      };
 
       // 触摸移动事件
       card.ontouchmove = function(e) {
-        e.preventDefault() // 阻止页面滚动
-        const touch = e.touches[0]
-        const x = touch.pageX - card.offsetLeft
-        const y = touch.pageY - card.offsetTop
-        
-        card.style.setProperty('--x', x + 'px')      
-        card.style.setProperty('--y', y + 'px')      
-      }
-    })
+        // 本处依旧可选地阻止默认行为
+        e.preventDefault(); 
+        const touch = e.touches[0];
+        const x = touch.pageX - card.offsetLeft;
+        const y = touch.pageY - card.offsetTop;
+
+        card.style.setProperty('--x', x + 'px');
+        card.style.setProperty('--y', y + 'px');
+      };
+    });
   </script>
 </body>
 </html>
