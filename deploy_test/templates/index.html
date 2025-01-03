@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,10 +14,22 @@
   <script>
     const cards = document.querySelectorAll('.card')
     cards.forEach(card => {
+      // 鼠标移动事件
       card.onmousemove = function(e) {
         const x = e.pageX - card.offsetLeft,
               y = e.pageY - card.offsetTop
 
+        card.style.setProperty('--x', x + 'px')      
+        card.style.setProperty('--y', y + 'px')      
+      }
+
+      // 触摸移动事件
+      card.ontouchmove = function(e) {
+        e.preventDefault() // 阻止页面滚动
+        const touch = e.touches[0]
+        const x = touch.pageX - card.offsetLeft
+        const y = touch.pageY - card.offsetTop
+        
         card.style.setProperty('--x', x + 'px')      
         card.style.setProperty('--y', y + 'px')      
       }
