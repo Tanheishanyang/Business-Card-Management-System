@@ -1,8 +1,8 @@
-.css
-* {
+html, body {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  overflow: hidden; /* 防止滚动 */
+  height: 100%; /* 确保完整高度 */
 }
 
 body {
@@ -11,6 +11,8 @@ body {
   align-items: center;
   min-height: 100vh;
   background-color: #222;
+  position: fixed; /* 固定位置 */
+  width: 100%; /* 确保宽度 */
 }
 
 .container {
@@ -19,7 +21,7 @@ body {
   justify-content: center;
   align-items: center;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh; /* 使用完整视口高度 */
 }
 
 .container .card {
