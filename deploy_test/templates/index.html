@@ -23,15 +23,37 @@
         card.style.setProperty('--y', y + 'px')      
       }
 
-      // 触摸移动事件
-      card.ontouchmove = function(e) {
-        e.preventDefault() // 阻止页面滚动
+      // 触摸开始事件
+      card.ontouchstart = function(e) {
+        e.preventDefault()
         const touch = e.touches[0]
         const x = touch.pageX - card.offsetLeft
         const y = touch.pageY - card.offsetTop
         
         card.style.setProperty('--x', x + 'px')      
         card.style.setProperty('--y', y + 'px')      
+      }
+
+      // 触摸移动事件
+      card.ontouchmove = function(e) {
+        e.preventDefault()
+        const touch = e.touches[0]
+        const x = touch.pageX - card.offsetLeft
+        const y = touch.pageY - card.offsetTop
+        
+        card.style.setProperty('--x', x + 'px')      
+        card.style.setProperty('--y', y + 'px')      
+      }
+
+      // 触摸结束事件
+      card.ontouchend = function(e) {
+        e.preventDefault()
+      }
+
+      // 鼠标离开事件
+      card.onmouseleave = function(e) {
+        card.style.setProperty('--x', '0px')      
+        card.style.setProperty('--y', '0px')      
       }
     })
   </script>
