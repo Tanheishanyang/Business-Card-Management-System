@@ -24,7 +24,6 @@
 
       // 触摸开始事件
       card.ontouchstart = function(e) {
-        e.preventDefault()
         const touch = e.touches[0]
         const x = touch.pageX - card.offsetLeft
         const y = touch.pageY - card.offsetTop
@@ -35,7 +34,6 @@
  
       // 触摸移动事件
       card.ontouchmove = function(e) {
-        e.preventDefault()
         const touch = e.touches[0]
         const x = touch.pageX - card.offsetLeft
         const y = touch.pageY - card.offsetTop
@@ -45,8 +43,9 @@
       }
 
       // 触摸结束事件
-      card.ontouchend = function(e) {
-        e.preventDefault()
+      card.ontouchend = function() {
+        card.style.setProperty('--x', '')      
+        card.style.setProperty('--y', '')      
       }
     })
   </script>
