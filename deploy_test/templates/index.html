@@ -1,124 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <!--
-    viewport 要确保 "width=device-width, user-scalable=no"
-    禁止用户缩放，避免 iOS 等浏览器在缩放时产生额外事件
-  -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Glowing Corner Hover Effects</title>
-
-  <style>
-    /* =========== [全局] 禁止滚动 + touch动作 ========== */
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      /* 防止滚动 */
-      overflow: hidden; 
-      /* 核心：禁用在移动端的默认滚动/缩放等手势 */
-      touch-action: none;
-      /* 让背景覆盖整个屏幕 */
-      background-color: #222;
-    }
-
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      /* 让 body 固定在可视区，不随滚动移动(有时可选) */
-      position: fixed;
-    }
-
-    /* =========== [容器与卡片] ========== */
-    .container {
-      position: relative;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 100%;
-      height: 100vh; /* 让容器铺满视口高度 */
-    }
-
-    .card {
-      position: relative;
-      /* 根据需求调大小；此处让宽度70%，高度60vh */
-      width: 70%;
-      height: 60vh;
-      min-height: 400px; 
-      background-color: rgba(45, 45, 45, 1);
-      border-radius: 20px;
-      overflow: hidden;
-      /* 同样禁用它上面的默认 touch 行为（可选） */
-      touch-action: none;
-    }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      top: var(--y);
-      left: var(--x);
-      transform: translate(-50%, -50%);
-      background: radial-gradient(var(--clr), transparent, transparent);
-      width: 700px;
-      height: 700px;
-      opacity: 0;
-      transition: .5s, top 0, left 0;
-    }
-
-    .card:hover::before {
-      opacity: 1;
-    }
-
-    .card::after {
-      content: '';
-      position: absolute;
-      inset: 2px;
-      border-radius: 18px;
-      background-color: rgba(45, 45, 45, .75);
-    }
-  </style>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <div class="container">
-    <!-- 这里可以改变 style="--clr: #0f0;" 里的颜色值来查看效果 -->
-    <div class="card" style="--clr: #0f0;"></div>
+      <div class="card" style="--clr: #0f0;"></div>
   </div>
-
   <script>
-    // =========== [禁止页面触摸滚动的另一种写法 - 配合 touch-action 使用] ========== 
-    // 若某些机型仍需在 JS 层面禁止默认滚动，可开启下行注释
-    // document.addEventListener("touchmove", function(e) {
-    //   e.preventDefault();
-    // }, { passive: false });
-
-
-    // =========== [卡片跟随鼠标 / 触摸点光效] ========== 
-    const cards = document.querySelectorAll('.card');
+    const cards = document.querySelectorAll('.card')
     cards.forEach(card => {
-      // ---------- 鼠标移动 ----------
+      // 鼠标移动事件
       card.onmousemove = function(e) {
-        const x = e.pageX - card.offsetLeft;
-        const y = e.pageY - card.offsetTop;
-        card.style.setProperty('--x', x + 'px');
-        card.style.setProperty('--y', y + 'px');
-      };
+        const x = e.pageX - card.offsetLeft,
+              y = e.pageY - card.offsetTop
 
-      // ---------- 触摸移动 ----------
+        card.style.setProperty('--x', x + 'px')      
+        card.style.setProperty('--y', y + 'px')      
+      }
+
+      // 触摸开始事件
+      card.ontouchstart = function(e) {
+        e.preventDefault()
+        const touch = e.touches[0]
+        const x = touch.pageX - card.offsetLeft
+        const y = touch.pageY - card.offsetTop
+        
+        card.style.setProperty('--x', x + 'px')      
+        card.style.setProperty('--y', y + 'px')      
+      }
+ 
+      // 触摸移动事件
       card.ontouchmove = function(e) {
-        // 如果需要保留浏览器某些默认行为，可注释掉本行
-        e.preventDefault();
-        const touch = e.touches[0];
-        // 这里用 getBoundingClientRect() 更准确，可以避免有父容器 offset 的问题
-        const rect = card.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-        card.style.setProperty('--x', x + 'px');
-        card.style.setProperty('--y', y + 'px');
-      };
-    });
+        e.preventDefault()
+        const touch = e.touches[0]
+        const x = touch.pageX - card.offsetLeft
+        const y = touch.pageY - card.offsetTop
+        
+        card.style.setProperty('--x', x + 'px')      
+        card.style.setProperty('--y', y + 'px')      
+      }
+
+      // 触摸结束事件
+      card.ontouchend = function(e) {
+        e.preventDefault()
+      }
+    })
   </script>
 </body>
 </html>
