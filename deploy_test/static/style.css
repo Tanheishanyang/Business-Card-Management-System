@@ -1,70 +1,150 @@
-html, body {
+@import url("https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;500;600;700;800;900&display=swap");
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
-  overflow: hidden; /* 防止滚动 */
-  height: 100%; /* 确保完整高度 */
+}
+
+html,
+body {
+  height: 100%;
+  min-height: 100vh;
 }
 
 body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: #3ed6d3;
-  position: fixed; /* 固定位置 */
-  width: 100%; /* 确保宽度 */
+  display: grid;
+  place-items: center;
+  font-family: "League Spartan", system-ui, sans-serif;
+  font-size: 1.1rem;
+  line-height: 1.2;
+  background-color: #1a1a1a;
+  color: #ddd;
 }
 
-.container {
+ul {
+  list-style: none;
+}
+
+.main {
+  max-width: 75rem;
+  padding: 3em 1.5em;
+}
+
+.main__heading {
+  font-weight: 600;
+  font-size: 2.25em;
+  margin-bottom: 0.75em;
+  text-align: center;
+  color: #eceff1;
+}
+
+.cards {
   position: relative;
+}
+
+.cards__inner {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 2.5em;
+}
+
+.card {
+  background-color: #2b2b2b;
+  border: 1px solid #eceff133;
+  border-radius: 15px;
+  color: #eceff1;
+  flex: 1 1 14rem;
+  display: grid;
+  grid-template-rows: auto auto auto 1fr;
+  padding: 1.5em 2em;
+  align-items: start;
+  gap: 1.25em;
+  --flow-space: 0.5em;
+  --hsl: var(--hue), var(--saturation), var(--lightness);
+}
+
+.card__bullets {
+  line-height: 1.4;
+}
+
+.card__bullets li::before {
+  display: inline-block;
+  content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' width='16' title='check' fill='%23dddddd'%3E%3Cpath d='M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z' /%3E%3C/svg%3E");
+  transform: translateY(0.25ch);
+  margin-right: 1ch;
+}
+
+.card__heading {
+  font-size: 1.05em;
+  font-weight: 700;
+}
+
+.card__price,
+.card__description {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+.cta {
+  display: block;
+  background-color: #0d0d0d;
+  color: #fff;
+  text-decoration: none;
+  padding: 0.7em;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 1em 0 0.5em 0;
+  align-self: end;
+}
+
+.card:nth-child(1) {
+  --hue: 200; /* 蓝色光效 */
+  --saturation: 90%;
+  --lightness: 55%;
+}
+
+.card:nth-child(2) {
+  --hue: 120; /* 绿色光效 */
+  --saturation: 80%;
+  --lightness: 50%;
+}
+
+.overlay .cta {
+  display: block;
+  grid-row: -1;
   width: 100%;
-  height: 100vh; /* 使用完整视口高度 */
+  background-color: hsl(var(--hsl));
 }
 
-.container .card {
-  position: relative;
-  width: 70%;
-  height: 50vh;
-  min-height: 400px;
-  max-width: 1200px;  /* 添加最大宽度限制 */
-  max-height: 700px;  /* 添加最大高度限制 */
-  background-color: rgb(0, 179, 255);
-  border-radius: 20px;
-  overflow: hidden;
-  /* 添加初始值 */
-  --x: 50%;
-  --y: 50%;
-  --clr: rgba(255, 255, 255, 0.7);
-}
-
-.container .card::before {
-  content: '';
+.overlay {
   position: absolute;
-  top: var(--y);
-  left: var(--x);
-  transform: translate(-50%, -50%) scale(0);
-  background: radial-gradient(circle at center, var(--clr), transparent 60%);
-  width: min(700px, 100%);  /* 限制最大宽度，同时确保不超过容器 */
-  height: min(700px, 100%); /* 限制最大高度，同时确保不超过容器 */
-  opacity: 0;
-  pointer-events: none;  /* 防止干扰鼠标事件 */
-  will-change: transform, opacity;  /* 优化性能 */
-  transition: opacity 0.5s ease-out,    /* 缩短过渡时间 */
-              transform 0.5s ease-out;   /* 统一过渡效果 */
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  opacity: var(--opacity, 0);
+  -webkit-mask: radial-gradient(25rem 25rem at var(--x) var(--y), #000 1%, transparent 50%);
+  mask: radial-gradient(25rem 25rem at var(--x) var(--y), #000 1%, transparent 50%);
+  transition: 400ms mask ease;
+  will-change: mask;
 }
 
-.container .card:hover::before {
-  opacity: 0.8;                            /* 降低一点透明度使效果更柔和 */
-  transform: translate(-50%, -50%) scale(1);/* 悬停时缩放到原始大小 */
+.overlay .card {
+  background-color: hsla(var(--hsl), 0.15);
+  border-color: hsla(var(--hsl), 1);
+  box-shadow: 0 0 0 1px inset hsl(var(--hsl));
 }
 
-.container .card::after {
-  content: '';
-  position: absolute;
-  inset: 2px;
-  border-radius: 18px;
-  background-color: rgba(7, 255, 247, 0.75);
+:not(.overlay) > .card {
+  transition: 400ms background ease;
+  will-change: background;
+}
+
+:not(.overlay) > .card:hover {
+  --lightness: 95%;
+  background: hsla(var(--hsl), 0.1);
 }
