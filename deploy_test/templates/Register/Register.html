@@ -1,37 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glowy Hover Effect</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Glowing Corner Hover Effects</title>
   
-  <link rel="stylesheet" href="{{ url_for('static', filename='Welcome/Welcome.css') }}">
+  <!-- 引用独立的 CSS 文件 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='Register/Register.css') }}">
 </head>
 <body>
-<main class="main flow">
-  <h1 class="main__heading">Register</h1>
-  <div class="main__cards cards">
-    <div class="cards__inner">
-      
-      <!-- Register Card -->
-      <div class="cards__card card">
-        <h2 class="card__heading">Register your account</h2>
-        <p class="card__description">Create a new account to get started.</p>
+  <div class="container">
+    <!-- 卡片内容 -->
+    <div class="card" style="--clr: #0f0;">
+      <h1 class="card-title">Register</h1>
+      <form class="card-form">
+        <!-- 输入框 -->
+        <input type="text" class="input-field" placeholder="Username" required />
+        <input type="email" class="input-field" placeholder="Email" required />
+        <input type="password" class="input-field" placeholder="Password" required />
         
-        <ul role="list" class="card__bullets flow">
-          <li>Easy registration</li>
-          <li>Access customized features</li>
-        </ul>
-        
-        <a href="/Back" class="card__cta cta">Back</a> 
-        
-      </div>
-      
+        <!-- 按钮 -->
+        <div class="button-group">
+          <button type="submit" class="btn btn-confirm">Confirm</button>
+          <button type="button" class="btn btn-back" onclick="window.history.back()">Back</button>
+        </div>
+      </form>
     </div>
-    <div class="overlay cards__inner"></div>
   </div>
-</main>
 
-<script src="{{ url_for('static', filename='Welcome/Welcome.js') }}"></script>
+  <!-- 引用独立的 JS 文件 -->
+  <script src="{{ url_for('static', filename='Register/Register.js') }}"></script>
 </body>
 </html>

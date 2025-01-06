@@ -102,6 +102,21 @@ ul {
   align-self: end;
 }
 
+.glow-btn {
+  position: relative;
+  z-index: 1; /* 确保按钮位于光效上方 */
+  display: inline-block;
+  padding: 0.7em 1.5em;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  background-color: #0d0d0d;
+  border-radius: 10px;
+  overflow: hidden; /* 防止光效溢出 */
+}
+
+
 .card:nth-child(1) {
   --hue: 200; /* 蓝色光效 */
   --saturation: 90%;

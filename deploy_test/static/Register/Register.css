@@ -1,0 +1,150 @@
+/* =========== [全局] 禁止滚动 + touch动作 ========== */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    /* 防止滚动 */
+    overflow: hidden;
+    /* 禁用在移动端的默认滚动/缩放等手势 */
+    touch-action: none;
+    background-color: #222; /* 背景颜色 */
+}
+  
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed; /* 固定在可视区 */
+}
+  
+/* =========== [容器与卡片] ========== */
+.container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh; /* 让容器铺满视口高度 */
+}
+  
+.card {
+    position: relative;
+    width: 70%; /* 卡片宽度 */
+    height: auto; /* 高度自适应内容 */
+    min-height: 400px; /* 最小高度 */
+    padding: 2rem; /* 内边距 */
+    background-color: rgba(45, 45, 45, 1);
+    border-radius: 20px;
+    overflow: hidden;
+    touch-action: auto; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* 添加卡片阴影 */
+}
+  
+.card::before {
+    content: '';
+    position: absolute;
+    top: var(--y);
+    left: var(--x);
+    transform: translate(-50%, -50%);
+    background: radial-gradient(var(--clr), transparent, transparent);
+    width: 700px;
+    height: 700px;
+    opacity: 0;
+    transition: 0.5s, top 0, left 0;
+}
+  
+.card:hover::before {
+    opacity: 1;
+}
+  
+/* 修改 .card::after 的 z-index */
+.card::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 18px;
+    background-color: rgba(45, 45, 45, 0.75);
+    z-index: 0; /* 确保遮罩层在内容之下 */
+}
+
+/* =========== [卡片内容] ========== */
+
+/* 修改 card-title 和表单的样式 */
+.card-title {
+    position: relative;
+    z-index: 1; /* 确保内容在遮罩层之上 */
+}
+
+.card-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin-top: 20px;
+    position: relative;
+    z-index: 1; /* 确保内容在遮罩层之上 */
+}
+
+/* 输入框样式 */
+.input-field {
+    width: 70%;
+    height: 40px;
+    margin: 15px auto;
+    padding: 0 15px;
+    display: block;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.input-field::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.input-field:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 按钮组样式 */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem; /* 按钮之间的间距 */
+}
+
+/* 按钮样式 */
+.btn {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-confirm {
+    background-color: var(--clr);
+    color: #000;
+}
+
+.btn-confirm:hover {
+    background-color: #0c0; /* 确认按钮的悬停效果 */
+    transform: scale(1.05); /* 放大效果 */
+}
+
+.btn-back {
+    background-color: #f00;
+    color: #fff;
+}
+
+.btn-back:hover {
+    background-color: #c00; /* 返回按钮的悬停效果 */
+    transform: scale(1.05); /* 放大效果 */
+}
