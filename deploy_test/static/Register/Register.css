@@ -8,7 +8,7 @@ html, body {
     overflow: hidden;
     /* 禁用在移动端的默认滚动/缩放等手势 */
     touch-action: none;
-    background-color: #222; /* 背景颜色 */
+    background-color: #6eac98; /* 背景颜色 */
 }
   
 body {
@@ -34,7 +34,7 @@ body {
     height: auto; /* 高度自适应内容 */
     min-height: 400px; /* 最小高度 */
     padding: 2rem; /* 内边距 */
-    background-color: rgba(45, 45, 45, 1);
+    background-color: #3b8d90;
     border-radius: 20px;
     overflow: hidden;
     touch-action: auto; 
@@ -48,14 +48,14 @@ body {
     left: var(--x);
     transform: translate(-50%, -50%);
     background: radial-gradient(var(--clr), transparent, transparent);
-    width: 700px;
-    height: 700px;
+    width: 900px;
+    height:900px;
     opacity: 0;
     transition: 0.5s, top 0, left 0;
 }
   
 .card:hover::before {
-    opacity: 1;
+    opacity: 0.5;
 }
   
 /* 修改 .card::after 的 z-index */
