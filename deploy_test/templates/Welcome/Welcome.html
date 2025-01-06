@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Glowy Hover Effect</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- 修改为正确的 CSS 文件路径 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='Welcome/Welcome.css') }}">
 </head>
 <body>
 <main class="main flow">
@@ -19,6 +20,7 @@
           <li>Secure login</li>
           <li>Personalized dashboard</li>
         </ul>
+        
         <a href="#login" class="card__cta cta">Login</a>
       </div>
 
@@ -26,16 +28,19 @@
       <div class="cards__card card">
         <h2 class="card__heading">Register</h2>
         <p class="card__description">Create a new account to get started.</p>
+        
         <ul role="list" class="card__bullets flow">
           <li>Easy registration</li>
           <li>Access customized features</li>
         </ul>
-        <a href="#register" class="card__cta cta">Register</a>
+        <a href="/register" class="card__cta cta">Register</a> 
+        
       </div>
     </div>
     <div class="overlay cards__inner"></div>
   </div>
 </main>
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+<!-- 修改为正确的 JS 文件路径 -->
+<script src="{{ url_for('static', filename='Welcome/Welcome.js') }}"></script>
 </body>
 </html>
