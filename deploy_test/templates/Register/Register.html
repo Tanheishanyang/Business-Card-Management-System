@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-  <title>Glowing Corner Hover Effects</title>
-  
+  <title>Register</title>
+
   <!-- 引用独立的 CSS 文件 -->
   <link rel="stylesheet" href="{{ url_for('static', filename='Register/Register.css') }}">
 </head>
@@ -13,12 +13,59 @@
     <!-- 卡片内容 -->
     <div class="card" style="--clr: #0f0;">
       <h1 class="card-title">Register</h1>
-      <form class="card-form">
-        <!-- 输入框 -->
-        <input type="text" class="input-field" placeholder="Username" required />
-        <input type="email" class="input-field" placeholder="Email" required />
-        <input type="password" class="input-field" placeholder="Password" required />
-        
+      <!-- 将表单绑定到 Flask 的后端 -->
+      <form class="card-form" action="{{ url_for('register') }}" method="POST">
+        <!-- 用户名输入框 -->
+        <input 
+          type="text" 
+          class="input-field" 
+          name="username" 
+          placeholder="Username" 
+          required 
+        />
+
+        <!-- 手机号输入框 -->
+        <input 
+          type="tel" 
+          class="input-field" 
+          name="phone" 
+          placeholder="Phone Number" 
+          pattern="[0-9]{11}" 
+          title="Enter a valid 11-digit phone number" 
+          required 
+        />
+
+        <!-- 密码输入框 -->
+        <input 
+          type="password" 
+          class="input-field" 
+          name="password" 
+          placeholder="Password" 
+          minlength="6" 
+          required 
+        />
+
+        <!-- 确认密码输入框 -->
+        <input 
+          type="password" 
+          class="input-field" 
+          name="confirm_password" 
+          placeholder="Confirm Password" 
+          minlength="6" 
+          required 
+        />
+
+        <!-- 错误提示 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <ul class="error-messages">
+            {% for category, message in messages %}
+              <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        {% endwith %}
+
         <!-- 按钮 -->
         <div class="button-group">
           <button type="submit" class="btn btn-confirm">Confirm</button>
