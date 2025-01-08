@@ -10,5 +10,9 @@ def home():
 def register():
     return render_template("Register/Register.html") 
 
+@app.route('/login')
+def login():
+    return render_template("Longin/Login.html") 
+
 if __name__ == '__main__':
     app.run(host='::', port=80, debug=True)
