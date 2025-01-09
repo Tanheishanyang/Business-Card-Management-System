@@ -101,12 +101,18 @@ def login():
             # 你也可以在这里存更多信息，比如 session['title'] = user['title']
 
             flash(f"Welcome, {user['username']}!", 'success')
-            return redirect(url_for('home'))
+            return redirect(url_for('enter'))
         else:
             flash('Invalid phone number or password!', 'error')
             return redirect(url_for('login'))
 
     return render_template("Login/Login.html")
+
+# 登录成功欢迎界面
+@app.route('/enter')
+def enter():
+    username = session.get('username', 'Guest')
+    return render_template('Enter/Enter.html', username=username)
 
 
 # 登出

@@ -1,0 +1,25 @@
+/* Enter.css */
+body, html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #11101d;
+  color: #fff;
+  font-family: 'Poppins', sans-serif;
+}
+
+.enter-container {
+  text-align: center;
+  animation: fadeIn 2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
