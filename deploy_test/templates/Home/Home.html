@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Home</title>
-    
+
     <!-- Boxicons CDN Link -->
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
 
@@ -25,7 +25,6 @@
         <span class="logo_name">Sheet</span>
       </div>
       <ul class="nav-links">
-        
         <!-- Dashboard -->
         <li>
           <a href="#">
@@ -85,15 +84,12 @@
         <li>
           <div class="profile-details">
             <div class="profile-content">
-              <!-- 如果以后想让头像也变成动态，可考虑把 session 中的头像 URL 或 base64 传进来 -->
               <img src="/static/images/default_user.png" alt="profile">
             </div>
             <div class="name-job">
-              <!-- 这里使用模板变量，而非固定写死 -->
               <div class="profile_name">{{ username }}</div>
               <div class="job">{{ phone }}</div>
             </div>
-            <!-- 点击退出 -->
             <a href="/logout">
               <i class='bx bx-log-out'></i>
             </a>
@@ -101,19 +97,18 @@
         </li>
       </ul>
     </div>
-    
+
     <!-- 右侧主体内容 -->
     <section class="home-section">
       <div class="home-content">
         <i class='bx bx-menu'></i>
-        <span class="text"></span>
+        <span class="text">Welcome, {{ username }}!</span>
       </div>
 
       <!-- 卡片容器，自动布局显示数据库 info 表中的信息 -->
       <div class="card-container">
         {% for emp in employees %}
           <div class="card">
-            <!-- 如果 emp.image 不为空或不为默认图，就显示 <img>；否则显示 "暂无图片" -->
             {% if emp.image and emp.image != '/static/images/default_user.png' %}
               <img src="{{ emp.image }}" alt="Profile" class="card-img" />
             {% else %}
@@ -133,18 +128,9 @@
 
     <!-- JS 代码（侧边栏折叠、菜单显示/隐藏） -->
     <script>
-      let arrow = document.querySelectorAll(".arrow");
-      for (var i = 0; i < arrow.length; i++) {
-        arrow[i].addEventListener("click", (e)=>{
-          let arrowParent = e.target.parentElement.parentElement;
-          arrowParent.classList.toggle("showMenu");
-        });
-      }
-
       let sidebar = document.querySelector(".sidebar");
       let sidebarBtn = document.querySelector(".bx-menu");
-      console.log(sidebarBtn);
-      sidebarBtn.addEventListener("click", ()=>{
+      sidebarBtn.addEventListener("click", () => {
         sidebar.classList.toggle("close");
       });
     </script>
