@@ -85,12 +85,13 @@
         <li>
           <div class="profile-details">
             <div class="profile-content">
-              <!-- 替换成你需要的头像地址或默认图 -->
+              <!-- 如果以后想让头像也变成动态，可考虑把 session 中的头像 URL 或 base64 传进来 -->
               <img src="/static/images/default_user.png" alt="profile">
             </div>
             <div class="name-job">
-              <div class="profile_name">用户名</div>
-              <div class="job">职位</div>
+              <!-- 这里使用模板变量，而非固定写死 -->
+              <div class="profile_name">{{ username }}</div>
+              <div class="job">{{ phone }}</div>
             </div>
             <!-- 点击退出 -->
             <a href="/logout">
@@ -112,7 +113,7 @@
       <div class="card-container">
         {% for emp in employees %}
           <div class="card">
-            <!-- 如果 emp.image 不为空或不为 None，就显示 <img>；否则显示 "暂无图片" -->
+            <!-- 如果 emp.image 不为空或不为默认图，就显示 <img>；否则显示 "暂无图片" -->
             {% if emp.image and emp.image != '/static/images/default_user.png' %}
               <img src="{{ emp.image }}" alt="Profile" class="card-img" />
             {% else %}

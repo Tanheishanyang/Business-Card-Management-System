@@ -4,6 +4,8 @@ import base64
 
 from flask import Flask, render_template, g
 from flask import request, redirect, url_for, flash
+from flask import session
+
 
 app = Flask(__name__)
 # 设置 secret_key（用于 session、flash 等）
@@ -78,7 +80,7 @@ def get_info_list():
 def welcome():
     return render_template("Welcome/Welcome.html")
 
-# 登录
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -92,6 +94,12 @@ def login():
         ).fetchone()
 
         if user:
+            # 将用户信息存到 session
+            session['user_id'] = user['id']
+            session['username'] = user['username']
+            session['phone'] = user['phone']
+            # 你也可以在这里存更多信息，比如 session['title'] = user['title']
+
             flash(f"Welcome, {user['username']}!", 'success')
             return redirect(url_for('home'))
         else:
@@ -100,10 +108,11 @@ def login():
 
     return render_template("Login/Login.html")
 
+
 # 登出
 @app.route('/logout')
 def logout():
-    # 这里可根据需要清除 session 等
+    session.clear()
     flash('You have been logged out.', 'success')
     return redirect(url_for('welcome'))
 
@@ -145,10 +154,20 @@ def register():
 # 主页（展示 info 表数据）
 @app.route('/home')
 def home():
-    # 获取 info 表的所有人员信息
     employees = get_info_list()
-    # 传给 Home.html 模板进行渲染
-    return render_template("Home/Home.html", employees=employees)
+
+    # 从 session 获取当前登录用户信息
+    # 如果没有登录，就给个默认值
+    current_username = session.get('username', '未登录')
+    current_phone = session.get('phone', '暂无')
+
+    return render_template(
+        "Home/Home.html",
+        employees=employees,
+        username=current_username,
+        phone=current_phone
+    )
+
 
 
 # --------------- 主入口 ---------------
