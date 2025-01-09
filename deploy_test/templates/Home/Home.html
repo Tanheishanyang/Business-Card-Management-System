@@ -1,117 +1,151 @@
 <!DOCTYPE html>
-<!-- Designined by CodingLab | www.youtube.com/codinglabyt -->
 <html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8">
     <title>Home</title>
-    <link rel="stylesheet" href="/static/Home/Home.css">
-    <!-- Boxiocns CDN Link -->
+    
+    <!-- Boxicons CDN Link -->
     <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap">
+
+    <!-- 引入合并后的 CSS 文件 -->
+    <link rel="stylesheet" href="/static/Home/Home.css">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-<body>
-  <div class="sidebar close">
-    <div class="logo-details">
-      <i class='bx bxl-c-plus-plus'></i>
-      <span class="logo_name">Sheet</span>
-    </div>
-    <ul class="nav-links">
-      
-      <!-- Dashboard -->
-      <li>
-        <a href="#">
-          <i class='bx bx-grid-alt'></i>
-          <span class="link_name">Dashboard</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Dashboard</a></li>
-        </ul>
-      </li>
 
-      <!-- Add -->
-      <li>
-        <a href="#">
-          <i class='bx bx-plus'></i>
-          <span class="link_name">Add</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Add</a></li>
-        </ul>
-      </li>
-
-      <!-- Modify -->
-      <li>
-        <a href="#">
-          <i class='bx bx-edit-alt'></i>
-          <span class="link_name">Modify</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Modify</a></li>
-        </ul>
-      </li>
-
-      <!-- Delete -->
-      <li>
-        <a href="#">
-          <i class='bx bx-trash'></i>
-          <span class="link_name">Delete</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Delete</a></li>
-        </ul>
-      </li>
-
-      <!-- Download -->
-      <li>
-        <a href="#">
-          <i class='bx bx-download'></i>
-          <span class="link_name">Download</span>
-        </a>
-        <ul class="sub-menu blank">
-          <li><a class="link_name" href="#">Download</a></li>
-        </ul>
-      </li>
-
-      <!-- 底部的个人信息和退出按钮 -->
-      <li>
-        <div class="profile-details">
-          <div class="profile-content">
-            <img src="image/profile.jpg" alt="profile">
-          </div>
-          <div class="name-job">
-            <div class="profile_name">用户名</div>
-            <div class="job">职位</div>
-          </div>
-          <a href="/logout">
-            <i class='bx bx-log-out'></i>
+  <body>
+    <!-- 侧边栏 -->
+    <div class="sidebar close">
+      <div class="logo-details">
+        <i class='bx bxl-c-plus-plus'></i>
+        <span class="logo_name">Sheet</span>
+      </div>
+      <ul class="nav-links">
+        
+        <!-- Dashboard -->
+        <li>
+          <a href="#">
+            <i class='bx bx-grid-alt'></i>
+            <span class="link_name">Dashboard</span>
           </a>
-        </div>
-      </li>
-    </ul>
-  </div>
+          <ul class="sub-menu blank">
+            <li><a class="link_name" href="#">Dashboard</a></li>
+          </ul>
+        </li>
 
-  <section class="home-section">
-    <div class="home-content">
-      <i class='bx bx-menu'></i>
-      <span class="text"></span>
+        <!-- Add -->
+        <li>
+          <a href="#">
+            <i class='bx bx-plus'></i>
+            <span class="link_name">Add</span>
+          </a>
+          <ul class="sub-menu blank">
+            <li><a class="link_name" href="#">Add</a></li>
+          </ul>
+        </li>
+
+        <!-- Modify -->
+        <li>
+          <a href="#">
+            <i class='bx bx-edit-alt'></i>
+            <span class="link_name">Modify</span>
+          </a>
+          <ul class="sub-menu blank">
+            <li><a class="link_name" href="#">Modify</a></li>
+          </ul>
+        </li>
+
+        <!-- Delete -->
+        <li>
+          <a href="#">
+            <i class='bx bx-trash'></i>
+            <span class="link_name">Delete</span>
+          </a>
+          <ul class="sub-menu blank">
+            <li><a class="link_name" href="#">Delete</a></li>
+          </ul>
+        </li>
+
+        <!-- Download -->
+        <li>
+          <a href="#">
+            <i class='bx bx-download'></i>
+            <span class="link_name">Download</span>
+          </a>
+          <ul class="sub-menu blank">
+            <li><a class="link_name" href="#">Download</a></li>
+          </ul>
+        </li>
+
+        <!-- 底部个人信息和退出按钮 -->
+        <li>
+          <div class="profile-details">
+            <div class="profile-content">
+              <!-- 替换成你需要的头像地址或默认图 -->
+              <img src="/static/images/default_user.png" alt="profile">
+            </div>
+            <div class="name-job">
+              <div class="profile_name">用户名</div>
+              <div class="job">职位</div>
+            </div>
+            <!-- 点击退出 -->
+            <a href="/logout">
+              <i class='bx bx-log-out'></i>
+            </a>
+          </div>
+        </li>
+      </ul>
     </div>
-  </section>
+    
+    <!-- 右侧主体内容 -->
+    <section class="home-section">
+      <div class="home-content">
+        <i class='bx bx-menu'></i>
+        <span class="text"></span>
+      </div>
 
-  <script>
-    let arrow = document.querySelectorAll(".arrow");
-    for (var i = 0; i < arrow.length; i++) {
-      arrow[i].addEventListener("click", (e)=>{
-        let arrowParent = e.target.parentElement.parentElement;
-        arrowParent.classList.toggle("showMenu");
+      <!-- 卡片容器，自动布局显示数据库 info 表中的信息 -->
+      <div class="card-container">
+        {% for emp in employees %}
+          <div class="card">
+            <!-- 如果 emp.image 不为空或不为 None，就显示 <img>；否则显示 "暂无图片" -->
+            {% if emp.image and emp.image != '/static/images/default_user.png' %}
+              <img src="{{ emp.image }}" alt="Profile" class="card-img" />
+            {% else %}
+              <div class="no-image">暂无图片</div>
+            {% endif %}
+
+            <div class="card-details">
+              <p class="card-field">姓名：{{ emp.name }}</p>
+              <p class="card-field">职称：{{ emp.title }}</p>
+              <p class="card-field">电话：{{ emp.phone }}</p>
+              <p class="card-field">地址：{{ emp.address }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- JS 代码（侧边栏折叠、菜单显示/隐藏） -->
+    <script>
+      let arrow = document.querySelectorAll(".arrow");
+      for (var i = 0; i < arrow.length; i++) {
+        arrow[i].addEventListener("click", (e)=>{
+          let arrowParent = e.target.parentElement.parentElement;
+          arrowParent.classList.toggle("showMenu");
+        });
+      }
+
+      let sidebar = document.querySelector(".sidebar");
+      let sidebarBtn = document.querySelector(".bx-menu");
+      console.log(sidebarBtn);
+      sidebarBtn.addEventListener("click", ()=>{
+        sidebar.classList.toggle("close");
       });
-    }
-
-    let sidebar = document.querySelector(".sidebar");
-    let sidebarBtn = document.querySelector(".bx-menu");
-    console.log(sidebarBtn);
-    sidebarBtn.addEventListener("click", ()=>{
-      sidebar.classList.toggle("close");
-    });
-  </script>
-</body>
+    </script>
+  </body>
 </html>
