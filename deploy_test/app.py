@@ -45,11 +45,21 @@ def close_db(exception):
 
 
 # --------------- 查询 info 表的人员信息 ---------------
-def get_info_list():
-    """查询 info 表中的所有人员信息，并将图片 BLOB 转为 base64"""
+def get_info_list(name_query=None, phone_query=None):
+    """
+    查询 info 表中的所有人员信息，或根据姓名和电话查询，并将图片 BLOB 转为 base64
+    """
     db = get_db()
-    # 假设 info 表的字段：id, name, phone, title, address, image
-    rows = db.execute('SELECT id, name, phone, title, address, image FROM info').fetchall()
+    query = 'SELECT id, name, phone, title, address, image FROM info WHERE 1=1'
+    params = []
+    if name_query:
+        query += ' AND name LIKE ?'
+        params.append(f'%{name_query}%')
+    if phone_query:
+        query += ' AND phone LIKE ?'
+        params.append(f'%{phone_query}%')
+
+    rows = db.execute(query, params).fetchall()
 
     info_list = []
     for row in rows:
@@ -117,6 +127,7 @@ def home():
         flash('请先登录！', 'error')
         return redirect(url_for('login'))
 
+    # 默认不进行搜索
     employees = get_info_list()
 
     # 从 session 获取当前登录用户信息
@@ -254,10 +265,50 @@ def update_employee(employee_id):
                 (name, phone, title, address, employee_id)
             )
         db.commit()
-        return jsonify({"status": "success", "message": "修改成功"}), 200
+
+        # 获取更新后的员工信息
+        updated_employee = db.execute(
+            'SELECT id, name, phone, title, address, image FROM info WHERE id = ?',
+            (employee_id,)
+        ).fetchone()
+
+        if updated_employee:
+            image_blob = updated_employee['image']
+            if image_blob:
+                image_base64 = base64.b64encode(image_blob).decode('utf-8')
+                image_src = f"data:image/jpeg;base64,{image_base64}"
+            else:
+                image_src = "/static/images/default_user.png"
+
+            employee_data = {
+                "id": updated_employee['id'],
+                "name": updated_employee['name'],
+                "phone": updated_employee['phone'],
+                "title": updated_employee['title'],
+                "address": updated_employee['address'],
+                "image": image_src
+            }
+        else:
+            employee_data = None
+
+        return jsonify({"status": "success", "message": "修改成功", "employee": employee_data}), 200
     except Exception as e:
         db.rollback()
         return jsonify({"status": "error", "message": "数据库错误"}), 500
+
+
+# --------------- 新增路由：搜索员工信息 ---------------
+@app.route('/search_employee', methods=['GET'])
+def search_employee():
+    if 'user_id' not in session:
+        return jsonify({"status": "error", "message": "未登录"}), 401
+
+    name_query = request.args.get('name')
+    phone_query = request.args.get('phone')
+
+    employees = get_info_list(name_query, phone_query)
+
+    return jsonify({"status": "success", "data": employees}), 200
 
 
 # --------------- 主入口 ---------------

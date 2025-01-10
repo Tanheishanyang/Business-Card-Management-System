@@ -393,6 +393,36 @@
   font-size: 16px;
 }
 
+/* 搜索栏样式 */
+.search-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.search-bar input[type="text"] {
+  flex: 1 1 200px;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.search-bar button {
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #2a2845;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-bar button:hover {
+  background-color: #413c61;
+}
+
 /* 侧边栏激活状态 */
 .sidebar .nav-links li.active {
   background-color: #2a2845; /* 比默认背景稍深 */

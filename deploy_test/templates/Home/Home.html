@@ -107,11 +107,11 @@
         </div>
 
         <!-- Dashboard 视图 -->
-        <div class="dashboard-container">
+        <div class="dashboard-container" style="display: none;">
             <!-- 您可以在这里添加 Dashboard 的内容 -->
-            <div class="card-container">
+            <div class="card-container" id="dashboard-card-container">
                 {% for emp in employees %}
-                    <div class="card">
+                    <div class="card" id="card-{{ emp.id }}">
                         {% if emp.image and emp.image != '/static/images/default_user.png' %}
                             <img src="{{ emp.image }}" alt="Profile" class="card-img" />
                         {% else %}
@@ -164,9 +164,15 @@
         <!-- Modify 视图 -->
         <div class="modify-container" style="display: none;">
             <div class="modify-card">
-                
+                <!-- 搜索栏 -->
+                <div class="search-bar">
+                    <input type="text" id="searchName" placeholder="输入姓名搜索">
+                    <input type="text" id="searchPhone" placeholder="输入电话搜索">
+                    <button type="button" id="searchBtn">搜索</button>
+                    <button type="button" id="resetBtn">重置</button>
+                </div>
                 <!-- 员工列表 -->
-                <div class="modify-card-container">
+                <div class="modify-card-container" id="modify-card-container">
                     {% for emp in employees %}
                         <div class="modify-card-item" data-id="{{ emp.id }}">
                             {% if emp.image and emp.image != '/static/images/default_user.png' %}
@@ -223,7 +229,7 @@
         </div>
     </section>
 
-    <!-- JS 代码 （侧边栏折叠、菜单显示/隐藏、添加员工信息、修改员工信息）  -->
+    <!-- JS 代码 （侧边栏折叠、菜单显示/隐藏、添加员工信息、修改员工信息、搜索功能）  -->
     <script>
         let sidebar = document.querySelector(".sidebar");
         let sidebarBtn = document.querySelector(".bx-menu");
@@ -314,14 +320,71 @@
                     document.getElementById("addressInput").value = "";
                     document.getElementById("imageUpload").value = "";
 
-                    // 切换回员工卡片视图
-                    dashboardContainer.style.display = "grid";
+                    // 切换回 Dashboard 视图
+                    dashboardContainer.style.display = "block";
                     addContainer.style.display = "none";
 
-                    // 刷新员工列表
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    // 刷新 Dashboard 中的员工列表
+                    // 使用 AJAX 获取最新的员工列表
+                    fetch('/search_employee')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === "success") {
+                                const employees = data.data;
+                                const dashboardCardContainer = document.getElementById("dashboard-card-container");
+                                dashboardCardContainer.innerHTML = ""; // 清空现有卡片
+
+                                employees.forEach(emp => {
+                                    const cardDiv = document.createElement("div");
+                                    cardDiv.classList.add("card");
+                                    cardDiv.id = `card-${emp.id}`;
+
+                                    if (emp.image && emp.image !== '/static/images/default_user.png') {
+                                        const img = document.createElement("img");
+                                        img.src = emp.image;
+                                        img.alt = "Profile";
+                                        img.classList.add("card-img");
+                                        cardDiv.appendChild(img);
+                                    } else {
+                                        const noImageDiv = document.createElement("div");
+                                        noImageDiv.classList.add("no-image");
+                                        noImageDiv.textContent = "暂无图片";
+                                        cardDiv.appendChild(noImageDiv);
+                                    }
+
+                                    const detailsDiv = document.createElement("div");
+                                    detailsDiv.classList.add("card-details");
+
+                                    const nameP = document.createElement("p");
+                                    nameP.classList.add("card-field");
+                                    nameP.textContent = `姓名：${emp.name}`;
+                                    detailsDiv.appendChild(nameP);
+
+                                    const titleP = document.createElement("p");
+                                    titleP.classList.add("card-field");
+                                    titleP.textContent = `职称：${emp.title}`;
+                                    detailsDiv.appendChild(titleP);
+
+                                    const phoneP = document.createElement("p");
+                                    phoneP.classList.add("card-field");
+                                    phoneP.textContent = `电话：${emp.phone}`;
+                                    detailsDiv.appendChild(phoneP);
+
+                                    const addressP = document.createElement("p");
+                                    addressP.classList.add("card-field");
+                                    addressP.textContent = `地址：${emp.address}`;
+                                    detailsDiv.appendChild(addressP);
+
+                                    cardDiv.appendChild(detailsDiv);
+                                    dashboardCardContainer.appendChild(cardDiv);
+                                });
+                            } else {
+                                console.error(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error:", error);
+                        });
                 } else {
                     feedback.textContent = data.message;
                 }
@@ -350,32 +413,42 @@
         }
 
         // 添加点击事件到每个修改卡片
-        document.querySelectorAll(".modify-card-item").forEach(item => {
-            item.addEventListener("click", () => {
-                const employeeId = item.getAttribute("data-id");
-                const name = item.querySelector(".card-field:nth-child(1)").textContent.replace("姓名：", "");
-                const title = item.querySelector(".card-field:nth-child(2)").textContent.replace("职称：", "");
-                const phone = item.querySelector(".card-field:nth-child(3)").textContent.replace("电话：", "");
-                const address = item.querySelector(".card-field:nth-child(4)").textContent.replace("地址：", "");
+        function addModifyCardEventListeners() {
+            document.querySelectorAll(".modify-card-item").forEach(item => {
+                item.addEventListener("click", () => {
+                    const employeeId = item.getAttribute("data-id");
+                    const name = item.querySelector(".card-field:nth-child(1)").textContent.replace("姓名：", "");
+                    const title = item.querySelector(".card-field:nth-child(2)").textContent.replace("职称：", "");
+                    const phone = item.querySelector(".card-field:nth-child(3)").textContent.replace("电话：", "");
+                    const address = item.querySelector(".card-field:nth-child(4)").textContent.replace("地址：", "");
 
-                // 填充表单
-                document.getElementById("editForm").setAttribute("data-id", employeeId);
-                document.getElementById("editNameInput").value = name;
-                document.getElementById("editTitleInput").value = title;
-                document.getElementById("editPhoneInput").value = phone;
-                document.getElementById("editAddressInput").value = address;
-                document.getElementById("editImageUpload").value = "";
+                    // 填充表单
+                    const editForm = document.getElementById("editForm");
+                    editForm.setAttribute("data-id", employeeId);
+                    document.getElementById("editNameInput").value = name;
+                    document.getElementById("editTitleInput").value = title;
+                    document.getElementById("editPhoneInput").value = phone;
+                    document.getElementById("editAddressInput").value = address;
+                    document.getElementById("editImageUpload").value = "";
 
-                // 显示模态框
-                editModal.style.display = "block";
+                    // 清除之前的反馈信息
+                    document.getElementById("editFeedback").textContent = "";
+
+                    // 显示模态框
+                    editModal.style.display = "block";
+                });
             });
-        });
+        }
+
+        // 初次加载时添加事件监听器
+        addModifyCardEventListeners();
 
         // 处理保存修改
         document.getElementById("editForm").addEventListener("submit", (e) => {
             e.preventDefault(); // 防止表单默认提交
 
-            const employeeId = e.target.getAttribute("data-id");
+            const editForm = e.target;
+            const employeeId = editForm.getAttribute("data-id");
             const name = document.getElementById("editNameInput").value.trim();
             const phone = document.getElementById("editPhoneInput").value.trim();
             const title = document.getElementById("editTitleInput").value.trim();
@@ -412,10 +485,65 @@
                     feedback.style.color = "green";
                     feedback.textContent = data.message;
 
+                    // 更新 Modify 视图中的员工卡片
+                    const updatedEmployee = data.employee;
+                    if (updatedEmployee) {
+                        const modifyCardContainer = document.getElementById("modify-card-container");
+                        const modifyCardItems = modifyCardContainer.querySelectorAll(".modify-card-item");
+                        modifyCardItems.forEach(card => {
+                            if (card.getAttribute("data-id") == updatedEmployee.id) {
+                                // 更新图片
+                                const img = card.querySelector(".card-img");
+                                if (img) {
+                                    img.src = updatedEmployee.image;
+                                } else {
+                                    const noImageDiv = card.querySelector(".no-image");
+                                    if (noImageDiv) {
+                                        noImageDiv.textContent = "暂无图片";
+                                        noImageDiv.style.backgroundImage = `url(${updatedEmployee.image})`;
+                                        noImageDiv.style.backgroundSize = "cover";
+                                    }
+                                }
+
+                                // 更新文本内容
+                                const cardFields = card.querySelectorAll(".card-field");
+                                cardFields[0].textContent = `姓名：${updatedEmployee.name}`;
+                                cardFields[1].textContent = `职称：${updatedEmployee.title}`;
+                                cardFields[2].textContent = `电话：${updatedEmployee.phone}`;
+                                cardFields[3].textContent = `地址：${updatedEmployee.address}`;
+                            }
+                        });
+
+                        // 如果 Dashboard 视图可见，更新 Dashboard 中的员工卡片
+                        if (dashboardContainer.style.display !== "none") {
+                            const dashboardCard = document.getElementById(`card-${updatedEmployee.id}`);
+                            if (dashboardCard) {
+                                // 更新图片
+                                const img = dashboardCard.querySelector(".card-img");
+                                if (img) {
+                                    img.src = updatedEmployee.image;
+                                } else {
+                                    const noImageDiv = dashboardCard.querySelector(".no-image");
+                                    if (noImageDiv) {
+                                        noImageDiv.textContent = "暂无图片";
+                                        noImageDiv.style.backgroundImage = `url(${updatedEmployee.image})`;
+                                        noImageDiv.style.backgroundSize = "cover";
+                                    }
+                                }
+
+                                // 更新文本内容
+                                const cardFields = dashboardCard.querySelectorAll(".card-field");
+                                cardFields[0].textContent = `姓名：${updatedEmployee.name}`;
+                                cardFields[1].textContent = `职称：${updatedEmployee.title}`;
+                                cardFields[2].textContent = `电话：${updatedEmployee.phone}`;
+                                cardFields[3].textContent = `地址：${updatedEmployee.address}`;
+                            }
+                        }
+                    }
+
                     // 关闭模态框
                     setTimeout(() => {
                         editModal.style.display = "none";
-                        window.location.reload();
                     }, 1000);
                 } else {
                     feedback.textContent = data.message;
@@ -425,6 +553,164 @@
                 console.error("Error:", error);
                 feedback.textContent = "发生错误，请稍后再试。";
             });
+        });
+
+        // 新增：处理搜索功能
+        document.getElementById("searchBtn").addEventListener("click", () => {
+            const nameQuery = document.getElementById("searchName").value.trim();
+            const phoneQuery = document.getElementById("searchPhone").value.trim();
+
+            // 创建查询参数
+            const params = new URLSearchParams();
+            if (nameQuery) params.append("name", nameQuery);
+            if (phoneQuery) params.append("phone", phoneQuery);
+
+            // 发送 GET 请求到后端
+            fetch(`/search_employee?${params.toString()}`, {
+                method: "GET"
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    const employees = data.data;
+                    const modifyCardContainer = document.getElementById("modify-card-container");
+                    modifyCardContainer.innerHTML = ""; // 清空现有卡片
+
+                    if (employees.length === 0) {
+                        modifyCardContainer.innerHTML = "<p>没有找到符合条件的员工。</p>";
+                        return;
+                    }
+
+                    employees.forEach(emp => {
+                        const cardDiv = document.createElement("div");
+                        cardDiv.classList.add("modify-card-item");
+                        cardDiv.setAttribute("data-id", emp.id);
+
+                        if (emp.image && emp.image !== '/static/images/default_user.png') {
+                            const img = document.createElement("img");
+                            img.src = emp.image;
+                            img.alt = "Profile";
+                            img.classList.add("card-img");
+                            cardDiv.appendChild(img);
+                        } else {
+                            const noImageDiv = document.createElement("div");
+                            noImageDiv.classList.add("no-image");
+                            noImageDiv.textContent = "暂无图片";
+                            cardDiv.appendChild(noImageDiv);
+                        }
+
+                        const detailsDiv = document.createElement("div");
+                        detailsDiv.classList.add("card-details");
+
+                        const nameP = document.createElement("p");
+                        nameP.classList.add("card-field");
+                        nameP.textContent = `姓名：${emp.name}`;
+                        detailsDiv.appendChild(nameP);
+
+                        const titleP = document.createElement("p");
+                        titleP.classList.add("card-field");
+                        titleP.textContent = `职称：${emp.title}`;
+                        detailsDiv.appendChild(titleP);
+
+                        const phoneP = document.createElement("p");
+                        phoneP.classList.add("card-field");
+                        phoneP.textContent = `电话：${emp.phone}`;
+                        detailsDiv.appendChild(phoneP);
+
+                        const addressP = document.createElement("p");
+                        addressP.classList.add("card-field");
+                        addressP.textContent = `地址：${emp.address}`;
+                        detailsDiv.appendChild(addressP);
+
+                        cardDiv.appendChild(detailsDiv);
+                        modifyCardContainer.appendChild(cardDiv);
+                    });
+
+                    // 重新添加事件监听器到新生成的卡片
+                    addModifyCardEventListeners();
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("发生错误，请稍后再试。");
+            });
+        });
+
+        // 处理重置搜索
+        document.getElementById("resetBtn").addEventListener("click", () => {
+            document.getElementById("searchName").value = "";
+            document.getElementById("searchPhone").value = "";
+
+            // 重新加载所有员工卡片
+            fetch('/search_employee')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === "success") {
+                        const employees = data.data;
+                        const modifyCardContainer = document.getElementById("modify-card-container");
+                        modifyCardContainer.innerHTML = ""; // 清空现有卡片
+
+                        if (employees.length === 0) {
+                            modifyCardContainer.innerHTML = "<p>没有找到符合条件的员工。</p>";
+                            return;
+                        }
+
+                        employees.forEach(emp => {
+                            const cardDiv = document.createElement("div");
+                            cardDiv.classList.add("modify-card-item");
+                            cardDiv.setAttribute("data-id", emp.id);
+
+                            if (emp.image && emp.image !== '/static/images/default_user.png') {
+                                const img = document.createElement("img");
+                                img.src = emp.image;
+                                img.alt = "Profile";
+                                img.classList.add("card-img");
+                                cardDiv.appendChild(img);
+                            } else {
+                                const noImageDiv = document.createElement("div");
+                                noImageDiv.classList.add("no-image");
+                                noImageDiv.textContent = "暂无图片";
+                                cardDiv.appendChild(noImageDiv);
+                            }
+
+                            const detailsDiv = document.createElement("div");
+                            detailsDiv.classList.add("card-details");
+
+                            const nameP = document.createElement("p");
+                            nameP.classList.add("card-field");
+                            nameP.textContent = `姓名：${emp.name}`;
+                            detailsDiv.appendChild(nameP);
+
+                            const titleP = document.createElement("p");
+                            titleP.classList.add("card-field");
+                            titleP.textContent = `职称：${emp.title}`;
+                            detailsDiv.appendChild(titleP);
+
+                            const phoneP = document.createElement("p");
+                            phoneP.classList.add("card-field");
+                            phoneP.textContent = `电话：${emp.phone}`;
+                            detailsDiv.appendChild(phoneP);
+
+                            const addressP = document.createElement("p");
+                            addressP.classList.add("card-field");
+                            addressP.textContent = `地址：${emp.address}`;
+                            detailsDiv.appendChild(addressP);
+
+                            cardDiv.appendChild(detailsDiv);
+                            modifyCardContainer.appendChild(cardDiv);
+                        });
+
+                        // 重新添加事件监听器到新生成的卡片
+                        addModifyCardEventListeners();
+                    } else {
+                        console.error(data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
         });
     </script>
 </body>
