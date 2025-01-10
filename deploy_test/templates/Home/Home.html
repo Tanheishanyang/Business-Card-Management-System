@@ -5,7 +5,7 @@
     <title>Home</title>
 
     <!-- Boxicons CDN Link -->
-    <link href='https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" rel="stylesheet">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -105,7 +105,7 @@
         <span class="text">Welcome, {{ username }}!</span>
       </div>
 
-      <!-- 卡片容器，自动布局显示数据库 info 表中的信息 -->
+      <!-- 员工卡片容器（默认显示） -->
       <div class="card-container">
         {% for emp in employees %}
           <div class="card">
@@ -124,6 +124,35 @@
           </div>
         {% endfor %}
       </div>
+
+      <!-- 新增：添加员工信息容器（默认隐藏） -->
+      <div class="add-container" style="display: none;">
+        <div class="add-card">
+          <h2>添加员工信息</h2>
+          <!-- 上传图片 -->
+          <label for="imageUpload">上传图片：</label>
+          <input type="file" id="imageUpload" accept="image/*">
+
+          <!-- 姓名 -->
+          <label for="nameInput">姓名：</label>
+          <input type="text" id="nameInput" placeholder="请输入姓名">
+
+          <!-- 电话 -->
+          <label for="phoneInput">电话：</label>
+          <input type="text" id="phoneInput" placeholder="请输入电话">
+
+          <!-- 职位 -->
+          <label for="titleInput">职位：</label>
+          <input type="text" id="titleInput" placeholder="请输入职位">
+
+          <!-- 地址 -->
+          <label for="addressInput">地址：</label>
+          <input type="text" id="addressInput" placeholder="请输入地址">
+
+          <!-- 提交按钮（后续可加点击事件） -->
+          <button type="button" id="submitBtn">提交</button>
+        </div>
+      </div>
     </section>
 
     <!-- JS 代码 （侧边栏折叠、菜单显示/隐藏）  -->
@@ -134,13 +163,24 @@
         sidebar.classList.toggle("close");
       });
 
-      // 添加点击按钮高亮功能
+      // 点击菜单项高亮 + 切换显示 .card-container 和 .add-container
       document.querySelectorAll(".nav-links li").forEach(item => {
         item.addEventListener("click", () => {
-          // 清除其他按钮的 active 类
+          // 菜单高亮
           document.querySelectorAll(".nav-links li").forEach(btn => btn.classList.remove("active"));
-          // 为当前点击的按钮添加 active 类
           item.classList.add("active");
+
+          // 读取菜单文字
+          const linkName = item.querySelector(".link_name")?.textContent.trim();
+
+          // 如果点击的是 "Add"，显示添加页面，否则显示员工卡片
+          if (linkName === "Add") {
+            document.querySelector(".card-container").style.display = "none";
+            document.querySelector(".add-container").style.display = "block";
+          } else {
+            document.querySelector(".card-container").style.display = "grid";
+            document.querySelector(".add-container").style.display = "none";
+          }
         });
       });
     </script>
