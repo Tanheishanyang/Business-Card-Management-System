@@ -133,6 +133,16 @@
       sidebarBtn.addEventListener("click", () => {
         sidebar.classList.toggle("close");
       });
+
+      // 添加点击按钮高亮功能
+      document.querySelectorAll(".nav-links li").forEach(item => {
+        item.addEventListener("click", () => {
+          // 清除其他按钮的 active 类
+          document.querySelectorAll(".nav-links li").forEach(btn => btn.classList.remove("active"));
+          // 为当前点击的按钮添加 active 类
+          item.classList.add("active");
+        });
+      });
     </script>
   </body>
 </html>

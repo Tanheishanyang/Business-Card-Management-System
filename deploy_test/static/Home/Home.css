@@ -299,3 +299,11 @@
   color: #333;
   font-size: 16px;
 }
+
+
+.sidebar .nav-links li.active {
+  background-color: #2a2845; /* 比默认背景稍深 */
+}
+.sidebar .nav-links li.active a .link_name {
+  color: #fff; /* 确保文字清晰可见 */
+}
