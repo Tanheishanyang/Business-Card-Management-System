@@ -28,7 +28,7 @@
         <ul class="nav-links">
             <!-- Dashboard -->
             <li>
-                <a href="#">
+                <a href="#" id="dashboard-link">
                     <i class='bx bx-grid-alt'></i>
                     <span class="link_name">Dashboard</span>
                 </a>
@@ -39,7 +39,7 @@
 
             <!-- Add -->
             <li>
-                <a href="#">
+                <a href="#" id="add-link">
                     <i class='bx bx-plus'></i>
                     <span class="link_name">Add</span>
                 </a>
@@ -50,7 +50,7 @@
 
             <!-- Modify -->
             <li>
-                <a href="#">
+                <a href="#" id="modify-link">
                     <i class='bx bx-edit-alt'></i>
                     <span class="link_name">Modify</span>
                 </a>
@@ -106,27 +106,30 @@
             <span class="text">Welcome, {{ username }}!</span>
         </div>
 
-        <!-- 员工卡片容器（默认显示） -->
-        <div class="card-container">
-            {% for emp in employees %}
-                <div class="card">
-                    {% if emp.image and emp.image != '/static/images/default_user.png' %}
-                        <img src="{{ emp.image }}" alt="Profile" class="card-img" />
-                    {% else %}
-                        <div class="no-image">暂无图片</div>
-                    {% endif %}
+        <!-- Dashboard 视图 -->
+        <div class="dashboard-container">
+            <!-- 您可以在这里添加 Dashboard 的内容 -->
+            <div class="card-container">
+                {% for emp in employees %}
+                    <div class="card">
+                        {% if emp.image and emp.image != '/static/images/default_user.png' %}
+                            <img src="{{ emp.image }}" alt="Profile" class="card-img" />
+                        {% else %}
+                            <div class="no-image">暂无图片</div>
+                        {% endif %}
 
-                    <div class="card-details">
-                        <p class="card-field">姓名：{{ emp.name }}</p>
-                        <p class="card-field">职称：{{ emp.title }}</p>
-                        <p class="card-field">电话：{{ emp.phone }}</p>
-                        <p class="card-field">地址：{{ emp.address }}</p>
+                        <div class="card-details">
+                            <p class="card-field">姓名：{{ emp.name }}</p>
+                            <p class="card-field">职称：{{ emp.title }}</p>
+                            <p class="card-field">电话：{{ emp.phone }}</p>
+                            <p class="card-field">地址：{{ emp.address }}</p>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
 
-        <!-- 新增：添加员工信息容器（默认隐藏） -->
+        <!-- Add 视图 -->
         <div class="add-container" style="display: none;">
             <div class="add-card">
                 <h2>添加员工信息</h2>
@@ -157,9 +160,70 @@
                 <div id="feedback" style="margin-top: 10px; color: red;"></div>
             </div>
         </div>
+
+        <!-- Modify 视图 -->
+        <div class="modify-container" style="display: none;">
+            <div class="modify-card">
+                
+                <!-- 员工列表 -->
+                <div class="modify-card-container">
+                    {% for emp in employees %}
+                        <div class="modify-card-item" data-id="{{ emp.id }}">
+                            {% if emp.image and emp.image != '/static/images/default_user.png' %}
+                                <img src="{{ emp.image }}" alt="Profile" class="card-img" />
+                            {% else %}
+                                <div class="no-image">暂无图片</div>
+                            {% endif %}
+
+                            <div class="card-details">
+                                <p class="card-field">姓名：{{ emp.name }}</p>
+                                <p class="card-field">职称：{{ emp.title }}</p>
+                                <p class="card-field">电话：{{ emp.phone }}</p>
+                                <p class="card-field">地址：{{ emp.address }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 编辑员工信息的模态框 -->
+        <div id="editModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>编辑员工信息</h2>
+                <form id="editForm">
+                    <!-- 上传图片 -->
+                    <label for="editImageUpload">上传图片：</label>
+                    <input type="file" id="editImageUpload" accept="image/*">
+
+                    <!-- 姓名 -->
+                    <label for="editNameInput">姓名：</label>
+                    <input type="text" id="editNameInput" name="name" required>
+
+                    <!-- 电话 -->
+                    <label for="editPhoneInput">电话：</label>
+                    <input type="text" id="editPhoneInput" name="phone" required>
+
+                    <!-- 职位 -->
+                    <label for="editTitleInput">职位：</label>
+                    <input type="text" id="editTitleInput" name="title" required>
+
+                    <!-- 地址 -->
+                    <label for="editAddressInput">地址：</label>
+                    <input type="text" id="editAddressInput" name="address" required>
+
+                    <!-- 提交按钮 -->
+                    <button type="submit" id="saveBtn">保存</button>
+
+                    <!-- 反馈信息 -->
+                    <div id="editFeedback" style="margin-top: 10px; color: red;"></div>
+                </form>
+            </div>
+        </div>
     </section>
 
-    <!-- JS 代码 （侧边栏折叠、菜单显示/隐藏、添加员工信息）  -->
+    <!-- JS 代码 （侧边栏折叠、菜单显示/隐藏、添加员工信息、修改员工信息）  -->
     <script>
         let sidebar = document.querySelector(".sidebar");
         let sidebarBtn = document.querySelector(".bx-menu");
@@ -167,26 +231,43 @@
             sidebar.classList.toggle("close");
         });
 
-        // 点击菜单项高亮 + 切换显示 .card-container 和 .add-container
-        document.querySelectorAll(".nav-links li").forEach(item => {
-            item.addEventListener("click", () => {
-                // 菜单高亮
-                document.querySelectorAll(".nav-links li").forEach(btn => btn.classList.remove("active"));
-                item.classList.add("active");
+        // 获取各个视图容器
+        const dashboardContainer = document.querySelector('.dashboard-container');
+        const addContainer = document.querySelector('.add-container');
+        const modifyContainer = document.querySelector('.modify-container');
 
-                // 读取菜单文字
-                const linkName = item.querySelector(".link_name")?.textContent.trim();
+        // 获取菜单链接
+        const dashboardLink = document.getElementById('dashboard-link');
+        const addLink = document.getElementById('add-link');
+        const modifyLink = document.getElementById('modify-link');
 
-                // 如果点击的是 "Add"，显示添加页面，否则显示员工卡片
-                if (linkName === "Add") {
-                    document.querySelector(".card-container").style.display = "none";
-                    document.querySelector(".add-container").style.display = "block";
-                } else {
-                    document.querySelector(".card-container").style.display = "grid";
-                    document.querySelector(".add-container").style.display = "none";
-                }
-            });
+        // 菜单点击事件
+        dashboardLink.addEventListener('click', () => {
+            setActiveMenu(dashboardLink);
+            dashboardContainer.style.display = "block";
+            addContainer.style.display = "none";
+            modifyContainer.style.display = "none";
         });
+
+        addLink.addEventListener('click', () => {
+            setActiveMenu(addLink);
+            dashboardContainer.style.display = "none";
+            addContainer.style.display = "block";
+            modifyContainer.style.display = "none";
+        });
+
+        modifyLink.addEventListener('click', () => {
+            setActiveMenu(modifyLink);
+            dashboardContainer.style.display = "none";
+            addContainer.style.display = "none";
+            modifyContainer.style.display = "block";
+        });
+
+        function setActiveMenu(activeLink) {
+            // 菜单高亮
+            document.querySelectorAll(".nav-links li").forEach(item => item.classList.remove("active"));
+            activeLink.parentElement.classList.add("active");
+        }
 
         // 新增：处理添加员工信息
         document.getElementById("submitBtn").addEventListener("click", () => {
@@ -234,11 +315,106 @@
                     document.getElementById("imageUpload").value = "";
 
                     // 切换回员工卡片视图
-                    document.querySelector(".card-container").style.display = "grid";
-                    document.querySelector(".add-container").style.display = "none";
+                    dashboardContainer.style.display = "grid";
+                    addContainer.style.display = "none";
 
                     // 刷新员工列表
                     setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    feedback.textContent = data.message;
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                feedback.textContent = "发生错误，请稍后再试。";
+            });
+        });
+
+        // 新增：处理修改员工信息
+        // 获取模态框元素
+        const editModal = document.getElementById("editModal");
+        const closeModalSpan = document.querySelector(".modal .close");
+
+        // 关闭模态框
+        closeModalSpan.onclick = function() {
+            editModal.style.display = "none";
+        }
+
+        // 点击模态框外部关闭
+        window.onclick = function(event) {
+            if (event.target == editModal) {
+                editModal.style.display = "none";
+            }
+        }
+
+        // 添加点击事件到每个修改卡片
+        document.querySelectorAll(".modify-card-item").forEach(item => {
+            item.addEventListener("click", () => {
+                const employeeId = item.getAttribute("data-id");
+                const name = item.querySelector(".card-field:nth-child(1)").textContent.replace("姓名：", "");
+                const title = item.querySelector(".card-field:nth-child(2)").textContent.replace("职称：", "");
+                const phone = item.querySelector(".card-field:nth-child(3)").textContent.replace("电话：", "");
+                const address = item.querySelector(".card-field:nth-child(4)").textContent.replace("地址：", "");
+
+                // 填充表单
+                document.getElementById("editForm").setAttribute("data-id", employeeId);
+                document.getElementById("editNameInput").value = name;
+                document.getElementById("editTitleInput").value = title;
+                document.getElementById("editPhoneInput").value = phone;
+                document.getElementById("editAddressInput").value = address;
+                document.getElementById("editImageUpload").value = "";
+
+                // 显示模态框
+                editModal.style.display = "block";
+            });
+        });
+
+        // 处理保存修改
+        document.getElementById("editForm").addEventListener("submit", (e) => {
+            e.preventDefault(); // 防止表单默认提交
+
+            const employeeId = e.target.getAttribute("data-id");
+            const name = document.getElementById("editNameInput").value.trim();
+            const phone = document.getElementById("editPhoneInput").value.trim();
+            const title = document.getElementById("editTitleInput").value.trim();
+            const address = document.getElementById("editAddressInput").value.trim();
+            const imageUpload = document.getElementById("editImageUpload").files[0];
+
+            const feedback = document.getElementById("editFeedback");
+            feedback.style.color = "red"; // 默认错误信息颜色
+
+            // 基本验证
+            if (!name || !phone || !title || !address) {
+                feedback.textContent = "请填写所有必填字段。";
+                return;
+            }
+
+            // 创建 FormData 对象
+            const formData = new FormData();
+            formData.append("name", name);
+            formData.append("phone", phone);
+            formData.append("title", title);
+            formData.append("address", address);
+            if (imageUpload) {
+                formData.append("image", imageUpload);
+            }
+
+            // 发送 POST 请求到后端
+            fetch(`/update_employee/${employeeId}`, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    feedback.style.color = "green";
+                    feedback.textContent = data.message;
+
+                    // 关闭模态框
+                    setTimeout(() => {
+                        editModal.style.display = "none";
                         window.location.reload();
                     }, 1000);
                 } else {

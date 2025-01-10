@@ -215,6 +215,51 @@ def add_employee():
         return jsonify({"status": "error", "message": "数据库错误"}), 500
 
 
+# --------------- 新增路由：修改员工信息 ---------------
+@app.route('/update_employee/<int:employee_id>', methods=['POST'])
+def update_employee(employee_id):
+    if 'user_id' not in session:
+        return jsonify({"status": "error", "message": "未登录"}), 401
+
+    name = request.form.get('name')
+    phone = request.form.get('phone')
+    title = request.form.get('title')
+    address = request.form.get('address')
+    image = request.files.get('image')
+
+    # 基本验证
+    if not all([name, phone, title, address]):
+        return jsonify({"status": "error", "message": "所有字段都是必填的"}), 400
+
+    # 处理图片
+    image_data = None
+    if image:
+        # 验证文件类型（这里只允许JPEG和PNG格式）
+        if image.mimetype not in ['image/jpeg', 'image/png']:
+            return jsonify({"status": "error", "message": "只允许上传JPEG或PNG格式的图片"}), 400
+        # 你可以添加更多的验证，比如文件大小
+        image_data = image.read()
+
+    # 更新数据库
+    db = get_db()
+    try:
+        if image_data:
+            db.execute(
+                'UPDATE info SET name = ?, phone = ?, title = ?, address = ?, image = ? WHERE id = ?',
+                (name, phone, title, address, image_data, employee_id)
+            )
+        else:
+            db.execute(
+                'UPDATE info SET name = ?, phone = ?, title = ?, address = ? WHERE id = ?',
+                (name, phone, title, address, employee_id)
+            )
+        db.commit()
+        return jsonify({"status": "success", "message": "修改成功"}), 200
+    except Exception as e:
+        db.rollback()
+        return jsonify({"status": "error", "message": "数据库错误"}), 500
+
+
 # --------------- 主入口 ---------------
 if __name__ == '__main__':
     # 检查数据库是否存在，若不存在则初始化
