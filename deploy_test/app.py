@@ -1,11 +1,13 @@
-# main.py
+# app.py
 
 import os
 import sqlite3
 import base64
 import datetime
-from flask import Flask, render_template, g, request, redirect, url_for, flash, jsonify, session
+import pandas as pd
+from flask import Flask, render_template, g, request, redirect, url_for, flash, jsonify, session, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
+from io import BytesIO
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -144,7 +146,7 @@ def login():
 
 @app.route('/home')
 def home():
-    """主页，展示所有员工信息"""
+    """主页，展示所有 信息"""
     if 'user_id' not in session:
         flash('请先登录！', 'error')
         return redirect(url_for('login'))
@@ -152,9 +154,9 @@ def home():
     employees = get_info_list()
     current_username = session.get('username', '未登录')
     current_phone = session.get('phone', '暂无')
-    return render_template("Home/Home.html", 
-                           employees=employees, 
-                           username=current_username, 
+    return render_template("Home/Home.html",
+                           employees=employees,
+                           username=current_username,
                            phone=current_phone)
 
 
@@ -168,7 +170,7 @@ def logout():
 
 @app.route('/add_employee', methods=['POST'])
 def add_employee():
-    """添加员工信息"""
+    """添加 信息"""
     if 'user_id' not in session:
         return jsonify({"status": "error", "message": "未登录"}), 401
 
@@ -202,7 +204,7 @@ def add_employee():
 
 @app.route('/update_employee/<int:employee_id>', methods=['POST'])
 def update_employee(employee_id):
-    """修改员工信息"""
+    """修改 信息"""
     if 'user_id' not in session:
         return jsonify({"status": "error", "message": "未登录"}), 401
 
@@ -257,7 +259,7 @@ def update_employee(employee_id):
             }
             return jsonify({"status": "success", "message": "修改成功", "employee": emp_data}), 200
         else:
-            return jsonify({"status": "error", "message": "未找到该员工"}), 404
+            return jsonify({"status": "error", "message": "未找到该 "}), 404
 
     except Exception as e:
         db.rollback()
@@ -266,7 +268,7 @@ def update_employee(employee_id):
 
 @app.route('/search_employee', methods=['GET'])
 def search_employee():
-    """搜索员工信息"""
+    """搜索 信息"""
     if 'user_id' not in session:
         return jsonify({"status": "error", "message": "未登录"}), 401
 
@@ -279,13 +281,13 @@ def search_employee():
 
 @app.route('/delete_employee/<int:employee_id>', methods=['POST'])
 def delete_employee(employee_id):
-    """删除员工信息：将信息移动到 deleted_info 表，并从 info 表中删除"""
+    """删除 信息：将信息移动到 deleted_info 表，并从 info 表中删除"""
     if 'user_id' not in session:
         return jsonify({"status": "error", "message": "未登录"}), 401
 
     db = get_db()
 
-    # 查询员工信息
+    # 查询 信息
     row = db.execute('SELECT * FROM info WHERE id = ?', (employee_id,)).fetchone()
     if not row:
         return jsonify({"status": "error", "message": "记录不存在"}), 404
@@ -323,8 +325,59 @@ def delete_employee(employee_id):
         return jsonify({"status": "error", "message": "数据库错误"}), 500
 
 
+@app.route('/download', methods=['GET'])
+def download():
+    """下载所有 信息（不包括图片）为 Excel 文件"""
+    if 'user_id' not in session:
+        flash('请先登录！', 'error')
+        return redirect(url_for('login'))
+
+    db = get_db()
+    try:
+        rows = db.execute('SELECT id, name, phone, title, address FROM info').fetchall()
+        if not rows:
+            flash('没有 信息可供下载。', 'error')
+            return redirect(url_for('home'))
+
+        # 将数据转换为 pandas DataFrame
+        data = []
+        for row in rows:
+            data.append({
+                "ID": row['id'],
+                "姓名": row['name'],
+                "电话": row['phone'],
+                "职称": row['title'],
+                "地址": row['address']
+            })
+        df = pd.DataFrame(data)
+
+        # 将 DataFrame 写入 Excel 文件
+        output = BytesIO()
+        with pd.ExcelWriter(output, engine='openpyxl') as writer:
+            df.to_excel(writer, index=False, sheet_name=' 信息')
+        output.seek(0)
+
+        # 生成文件名
+        filename = f" 信息_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
+
+        # 返回二进制数据，不强制下载
+        return send_file(
+            output,
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=False,
+            attachment_filename=filename
+        )
+
+    except Exception as e:
+        flash('下载时发生错误，请稍后再试。', 'error')
+        return redirect(url_for('home'))
+
+
 if __name__ == '__main__':
     if not os.path.exists(DATABASE):
         init_db()
         print("数据库已初始化。")
-    app.run(host='::', port=80, debug=True)
+
+    ssl_context = ('cert.pem', 'key.pem')
+    
+    app.run(host='0.0.0.0', port=80, debug=True, ssl_context=ssl_context)

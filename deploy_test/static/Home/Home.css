@@ -283,7 +283,7 @@
   font-weight: 600;
 }
 
-/* ============= 卡片区域(员工信息) ============= */
+/* ============= 卡片区域( 信息) ============= */
 .card-container {
   padding: 20px;
   display: grid;
@@ -333,7 +333,7 @@
   font-size: 16px;
 }
 
-/* Modify 视图的员工卡片 */
+/* Modify 视图的 卡片 */
 .modify-card-container {
   padding: 20px;
   display: grid;
@@ -388,7 +388,7 @@
   font-size: 16px;
 }
 
-/* Delete 视图的员工卡片 */
+/* Delete 视图的 卡片 */
 .delete-card-container {
   padding: 20px;
   display: grid;

@@ -72,7 +72,7 @@
 
             <!-- Download -->
             <li>
-                <a href="#">
+                <a href="#" id="download-link">
                     <i class='bx bx-download'></i>
                     <span class="link_name">Download</span>
                 </a>
@@ -132,7 +132,7 @@
         <!-- Add 视图 -->
         <div class="add-container" style="display: none;">
             <div class="add-card">
-                <h2>添加员工信息</h2>
+                <h2>添信息</h2>
                 <!-- 上传图片 -->
                 <label for="imageUpload">上传图片：</label>
                 <input type="file" id="imageUpload" accept="image/*">
@@ -172,7 +172,7 @@
                     <button type="button" id="searchBtn">搜索</button>
                     <button type="button" id="resetBtn">重置</button>
                 </div>
-                <!-- 员工列表 -->
+                <!--列表 -->
                 <div class="modify-card-container" id="modify-card-container">
                     {% for emp in employees %}
                         <div class="modify-card-item" data-id="{{ emp.id }}">
@@ -204,7 +204,7 @@
                     <button type="button" id="searchBtnDel">搜索</button>
                     <button type="button" id="resetBtnDel">重置</button>
                 </div>
-                <!-- 员工列表 -->
+                <!--  列表 -->
                 <div class="delete-card-container" id="delete-card-container">
                     {% for emp in employees %}
                         <div class="delete-card-item" data-id="{{ emp.id }}">
@@ -226,11 +226,11 @@
             </div>
         </div>
 
-        <!-- 编辑员工信息的模态框 -->
+        <!-- 编辑 信息的模态框 -->
         <div id="editModal" class="modal" style="display: none;">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <h2>编辑员工信息</h2>
+                <h2>编辑 信息</h2>
                 <form id="editForm">
                     <!-- 上传图片 -->
                     <label for="editImageUpload">上传图片：</label>
@@ -277,7 +277,7 @@
         </div>
     </section>
 
-    <!-- JS 代码 （侧边栏折叠、菜单显示/隐藏、添加员工信息、修改员工信息、删除员工信息、搜索功能）  -->
+    <!-- JS 代码 （侧边栏折叠、菜单显示/隐藏、添加 信息、修改 信息、删除 信息、搜索功能、下载功能）  -->
     <script>
         let sidebar = document.querySelector(".sidebar");
         let sidebarBtn = document.querySelector(".bx-menu");
@@ -296,6 +296,7 @@
         const addLink = document.getElementById('add-link');
         const modifyLink = document.getElementById('modify-link');
         const deleteLink = document.getElementById('delete-link');
+        const downloadLink = document.getElementById('download-link');
 
         // 菜单点击事件
         dashboardLink.addEventListener('click', () => {
@@ -328,6 +329,44 @@
             addContainer.style.display = "none";
             modifyContainer.style.display = "none";
             deleteContainer.style.display = "block";
+        });
+
+        downloadLink.addEventListener('click', async (e) => {
+            e.preventDefault(); // 防止默认行为
+
+            // 检查浏览器是否支持 File System Access API
+            if (!window.showSaveFilePicker) {
+                alert("您的浏览器不支持文件系统访问API，请使用最新版本的 Chrome 或 Edge 浏览器。");
+                return;
+            }
+
+            try {
+                // Prompt user to select file save location
+                const options = {
+                    types: [{
+                        description: 'Excel Files',
+                        accept: {'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']},
+                    }],
+                    suggestedName: ` 数据库_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`
+                };
+                const handle = await window.showSaveFilePicker(options);
+                const writable = await handle.createWritable();
+
+                // Fetch the Excel file from the server
+                const response = await fetch('/download');
+                if (!response.ok) {
+                    throw new Error('网络响应不是OK');
+                }
+                const blob = await response.blob();
+                // Write the blob to the file
+                await writable.write(blob);
+                await writable.close();
+
+                alert('文件已成功保存。');
+            } catch (error) {
+                console.error('下载失败:', error);
+                alert('下载失败或被取消。');
+            }
         });
 
         function setActiveMenu(activeLink) {
@@ -385,7 +424,7 @@
                     dashboardContainer.style.display = "block";
                     addContainer.style.display = "none";
 
-                    // 添加新的员工卡片到 Dashboard
+                    // 添加新的 卡片到 Dashboard
                     // 为简化，刷新 Dashboard 部分
                     fetch('/search_employee')
                         .then(response => response.json())
@@ -439,6 +478,10 @@
                                     cardDiv.appendChild(detailsDiv);
                                     dashboardCardContainer.appendChild(cardDiv);
                                 });
+
+                                // 重新绑定编辑事件监听器
+                                addModifyCardEventListeners();
+                                addDeleteCardEventListeners();
                             } else {
                                 console.error(data.message);
                             }
@@ -546,7 +589,7 @@
                     feedback.style.color = "green";
                     feedback.textContent = data.message;
 
-                    // 更新 Modify 视图中的员工卡片
+                    // 更新 Modify 视图中的 卡片
                     const updatedEmployee = data.employee;
                     if (updatedEmployee) {
                         const modifyCardContainer = document.getElementById("modify-card-container");
@@ -575,7 +618,7 @@
                             }
                         });
 
-                        // 如果 Dashboard 视图可见，更新 Dashboard 中的员工卡片
+                        // 如果 Dashboard 视图可见，更新 Dashboard 中的 卡片
                         if (dashboardContainer.style.display !== "none") {
                             const dashboardCard = document.getElementById(`card-${updatedEmployee.id}`);
                             if (dashboardCard) {
@@ -638,7 +681,7 @@
                     modifyCardContainer.innerHTML = ""; // 清空现有卡片
 
                     if (employees.length === 0) {
-                        modifyCardContainer.innerHTML = "<p>没有找到符合条件的员工。</p>";
+                        modifyCardContainer.innerHTML = "<p>没有找到符合条件的 。</p>";
                         return;
                     }
 
@@ -704,7 +747,7 @@
             document.getElementById("searchName").value = "";
             document.getElementById("searchPhone").value = "";
 
-            // 重新加载所有员工卡片
+            // 重新加载所有 卡片
             fetch('/search_employee')
                 .then(response => response.json())
                 .then(data => {
@@ -714,7 +757,7 @@
                         modifyCardContainer.innerHTML = ""; // 清空现有卡片
 
                         if (employees.length === 0) {
-                            modifyCardContainer.innerHTML = "<p>没有找到符合条件的员工。</p>";
+                            modifyCardContainer.innerHTML = "<p>没有找到符合条件的 。</p>";
                             return;
                         }
 
@@ -782,7 +825,7 @@
         const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
         const cancelDeleteBtn = document.getElementById("cancelDeleteBtn");
 
-        let currentDeleteId = null; // 当前要删除的员工ID
+        let currentDeleteId = null; // 当前要删除的 ID
 
         closeDeleteModalSpan.onclick = () => {
             deleteModal.style.display = "none";
@@ -885,7 +928,7 @@
                     deleteCardContainer.innerHTML = "";
 
                     if (employees.length === 0) {
-                        deleteCardContainer.innerHTML = "<p>没有找到符合条件的员工。</p>";
+                        deleteCardContainer.innerHTML = "<p>没有找到符合条件的 。</p>";
                         return;
                     }
 
@@ -951,7 +994,7 @@
             document.getElementById("searchNameDel").value = "";
             document.getElementById("searchPhoneDel").value = "";
 
-            // 重新加载所有员工信息
+            // 重新加载所有 信息
             fetch('/search_employee')
                 .then(response => response.json())
                 .then(data => {
@@ -961,7 +1004,7 @@
                         deleteCardContainer.innerHTML = "";
 
                         if (employees.length === 0) {
-                            deleteCardContainer.innerHTML = "<p>没有找到符合条件的员工。</p>";
+                            deleteCardContainer.innerHTML = "<p>没有找到符合条件的 。</p>";
                             return;
                         }
 

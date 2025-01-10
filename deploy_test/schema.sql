@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     password TEXT NOT NULL
 );
 
--- 创建 info 表，用于存储员工信息
+-- 创建 info 表，用于存储 信息
 CREATE TABLE IF NOT EXISTS info (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS info (
     image BLOB
 );
 
--- 创建 deleted_info 表，用于存储已删除的员工信息
+-- 创建 deleted_info 表，用于存储已删除的 信息
 CREATE TABLE IF NOT EXISTS deleted_info (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
