@@ -1,11 +1,12 @@
+# main.py
+
 import os
 import sqlite3
 import base64
 
 from flask import Flask, render_template, g
-from flask import request, redirect, url_for, flash
+from flask import request, redirect, url_for, flash, jsonify
 from flask import session
-
 
 app = Flask(__name__)
 # 设置 secret_key（用于 session、flash 等）
@@ -101,26 +102,43 @@ def login():
             # 你也可以在这里存更多信息，比如 session['title'] = user['title']
 
             flash(f"Welcome, {user['username']}!", 'success')
-            return redirect(url_for('enter'))
+            return redirect(url_for('home'))
         else:
             flash('Invalid phone number or password!', 'error')
             return redirect(url_for('login'))
 
     return render_template("Login/Login.html")
 
+
 # 登录成功欢迎界面
-@app.route('/enter')
-def enter():
-    username = session.get('username', 'Guest')
-    return render_template('Enter/Enter.html', username=username)
+@app.route('/home')
+def home():
+    if 'user_id' not in session:
+        flash('请先登录！', 'error')
+        return redirect(url_for('login'))
+
+    employees = get_info_list()
+
+    # 从 session 获取当前登录用户信息
+    # 如果没有登录，就给个默认值
+    current_username = session.get('username', '未登录')
+    current_phone = session.get('phone', '暂无')
+
+    return render_template(
+        "Home/Home.html",
+        employees=employees,
+        username=current_username,
+        phone=current_phone
+    )
 
 
 # 登出
 @app.route('/logout')
 def logout():
     session.clear()
-    
+    flash('您已成功登出。', 'success')
     return redirect(url_for('welcome'))
+
 
 # 注册
 @app.route('/register', methods=['GET', 'POST'])
@@ -143,7 +161,7 @@ def register():
             (phone,)
         ).fetchone()
         if existing_user:
-            flash('This phone has registered.', 'error')
+            flash('This phone has already been registered.', 'error')
             return redirect(url_for('register'))
 
         # 插入新用户
@@ -152,32 +170,55 @@ def register():
             (username, phone, password)
         )
         db.commit()
-        flash('Registration successful!', 'success')
+        flash('Registration successful! Please log in.', 'success')
         return redirect(url_for('login'))
 
     return render_template("Register/Register.html")
 
-# 主页（展示 info 表数据）
-@app.route('/home')
-def home():
-    employees = get_info_list()
 
-    # 从 session 获取当前登录用户信息
-    # 如果没有登录，就给个默认值
-    current_username = session.get('username', '未登录')
-    current_phone = session.get('phone', '暂无')
+# --------------- 新增路由：添加员工信息 ---------------
+@app.route('/add_employee', methods=['POST'])
+def add_employee():
+    if 'user_id' not in session:
+        return jsonify({"status": "error", "message": "未登录"}), 401
 
-    return render_template(
-        "Home/Home.html",
-        employees=employees,
-        username=current_username,
-        phone=current_phone
-    )
+    name = request.form.get('name')
+    phone = request.form.get('phone')
+    title = request.form.get('title')
+    address = request.form.get('address')
+    image = request.files.get('image')
 
+    # 基本验证
+    if not all([name, phone, title, address]):
+        return jsonify({"status": "error", "message": "所有字段都是必填的"}), 400
+
+    # 处理图片
+    image_data = None
+    if image:
+        # 验证文件类型（这里只允许JPEG和PNG格式）
+        if image.mimetype not in ['image/jpeg', 'image/png']:
+            return jsonify({"status": "error", "message": "只允许上传JPEG或PNG格式的图片"}), 400
+        # 你可以添加更多的验证，比如文件大小
+        image_data = image.read()
+
+    # 插入到数据库
+    db = get_db()
+    try:
+        db.execute(
+            'INSERT INTO info (name, phone, title, address, image) VALUES (?, ?, ?, ?, ?)',
+            (name, phone, title, address, image_data)
+        )
+        db.commit()
+        return jsonify({"status": "success", "message": "添加成功"}), 200
+    except Exception as e:
+        db.rollback()
+        return jsonify({"status": "error", "message": "数据库错误"}), 500
 
 
 # --------------- 主入口 ---------------
 if __name__ == '__main__':
-    # 如需初始化数据库，第一次可手动调用 init_db() 或者命令行执行
-    # init_db()
-    app.run(host='::', port=80, debug=True)
+    # 检查数据库是否存在，若不存在则初始化
+    if not os.path.exists(DATABASE):
+        init_db()
+        print("数据库已初始化。")
+    app.run(host='0.0.0.0', port=80, debug=True)
