@@ -327,4 +327,4 @@ if __name__ == '__main__':
     if not os.path.exists(DATABASE):
         init_db()
         print("数据库已初始化。")
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
