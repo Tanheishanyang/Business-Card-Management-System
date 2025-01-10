@@ -28,3 +28,7 @@ CREATE TABLE IF NOT EXISTS deleted_info (
     image BLOB,
     deleted_at TEXT NOT NULL
 );
+
+
+CREATE INDEX IF NOT EXISTS idx_info_name ON info(name);
+CREATE INDEX IF NOT EXISTS idx_info_phone ON info(phone);
