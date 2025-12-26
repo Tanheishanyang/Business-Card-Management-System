@@ -6,7 +6,7 @@ import random
 
 # 配置参数
 DATABASE = 'database.db'  # 你的数据库文件路径
-NUM_RECORDS = 10000        # 需要插入的记录数量
+NUM_RECORDS = 100       # 需要插入的记录数量
 
 # 初始化 Faker
 fake = Faker('zh_CN')  # 使用中文本地化数据
